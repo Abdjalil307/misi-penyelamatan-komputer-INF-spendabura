@@ -1,0 +1,743 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#101a3a">
+  <meta name="description" content="Misi Penyelamatan Komputer — game edukasi Sistem Komputer untuk belajar perangkat keras dan perangkat lunak.">
+  <title>Misi Penyelamatan Komputer | Game Edukasi</title>
+  <style>
+    :root {
+      --navy:#101a3a; --navy2:#182854; --panel:#1d2d5a; --cyan:#5ee7f5;
+      --yellow:#ffd166; --green:#73f0b2; --red:#ff758f; --white:#f5f7ff;
+      --muted:#b9c6e9; --line:rgba(255,255,255,.13);
+    }
+    * { box-sizing:border-box; }
+    html { scroll-behavior:smooth; }
+    body {
+      margin:0; min-height:100vh; color:var(--white);
+      font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+      background:radial-gradient(ellipse at top,#253b78 0%,var(--navy) 58%,#090f25 100%);
+    }
+    button, input { font:inherit; }
+    button { cursor:pointer; touch-action:manipulation; }
+    button:focus-visible, input:focus-visible { outline:3px solid var(--yellow); outline-offset:3px; }
+    .wrap { width:min(980px,100%); margin:auto; padding:clamp(14px,3vw,28px); }
+    header { display:flex; justify-content:space-between; align-items:center; gap:12px; margin-bottom:22px; }
+    .brand { display:flex; gap:10px; align-items:center; font-weight:900; letter-spacing:.3px; }
+    .brand-icon { display:grid; place-items:center; width:42px; height:42px; border-radius:13px; background:linear-gradient(135deg,var(--cyan),#8b9cff); color:var(--navy); font-size:23px; }
+    .top-chip { color:var(--cyan); border:1px solid #3d648d; border-radius:999px; padding:7px 12px; font-size:.8rem; font-weight:700; }
+    .hero { text-align:center; padding:clamp(20px,5vw,44px) 12px 28px; }
+    .eyebrow { color:var(--cyan); font-size:.8rem; font-weight:900; letter-spacing:2px; text-transform:uppercase; }
+    h1 { margin:10px auto; max-width:760px; font-size:clamp(2rem,7vw,4rem); line-height:1.04; letter-spacing:-1.5px; }
+    h1 span { color:var(--yellow); }
+    .intro { max-width:640px; margin:16px auto 24px; color:var(--muted); line-height:1.65; }
+    .hero-art { font-size:clamp(3.5rem,12vw,6.5rem); filter:drop-shadow(0 12px 22px #05091c); margin:8px 0 18px; }
+    .btn { border:0; border-radius:14px; padding:13px 20px; font-weight:850; transition:transform .15s,filter .15s; }
+    .btn:hover { transform:translateY(-2px); filter:brightness(1.07); }
+    .btn:active { transform:scale(.98); }
+    .primary { background:var(--yellow); color:#202445; box-shadow:0 7px 0 #b9812c; }
+    .secondary { background:#2b3c70; border:1px solid #53699e; color:var(--white); }
+    .small { padding:9px 13px; font-size:.9rem; }
+    .panel { background:linear-gradient(145deg,rgba(35,52,100,.96),rgba(22,34,72,.97)); border:1px solid var(--line); border-radius:22px; padding:clamp(18px,4vw,30px); box-shadow:0 18px 48px #050a1c55; }
+    .hidden { display:none !important; }
+    .section-title { margin:0 0 8px; font-size:clamp(1.35rem,4vw,2rem); }
+    .sub { color:var(--muted); margin:0 0 22px; line-height:1.55; }
+    .mission-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:14px; }
+    .mission { text-align:left; border:1px solid var(--line); border-radius:18px; padding:18px; background:#111e43; color:var(--white); min-height:150px; }
+    .mission .emoji { font-size:2rem; }
+    .mission h3 { margin:8px 0 5px; }
+    .mission p { margin:0; color:var(--muted); font-size:.92rem; line-height:1.5; }
+    .mission:disabled { opacity:.42; cursor:not-allowed; }
+    .stats { display:flex; gap:10px; flex-wrap:wrap; margin-bottom:18px; }
+    .stat { flex:1; min-width:100px; background:#101b3c; border:1px solid var(--line); padding:11px 13px; border-radius:13px; }
+    .stat small { display:block; color:var(--muted); margin-bottom:4px; }
+    .stat strong { font-size:1.2rem; }
+    .progress { height:9px; background:#0d1632; border-radius:999px; overflow:hidden; margin:12px 0 22px; }
+    .progress > div { height:100%; width:0; background:linear-gradient(90deg,var(--cyan),var(--green)); transition:width .25s; }
+    .question-count { color:var(--cyan); font-size:.82rem; font-weight:900; letter-spacing:1px; text-transform:uppercase; }
+    .question { font-size:clamp(1.25rem,4vw,1.8rem); line-height:1.35; margin:10px 0 20px; }
+    .answers { display:grid; gap:10px; }
+    .answer { display:flex; gap:12px; align-items:center; width:100%; text-align:left; padding:14px 15px; border:1px solid #53699e; border-radius:14px; background:#15234b; color:var(--white); line-height:1.4; }
+    .answer .letter { display:grid; place-items:center; flex:0 0 32px; height:32px; border-radius:9px; background:#2b3c70; color:var(--cyan); font-weight:900; }
+    .answer:hover:not(:disabled) { border-color:var(--cyan); background:#203365; }
+    .answer.correct { border-color:var(--green); background:#17473f; }
+    .answer.wrong { border-color:var(--red); background:#54283e; }
+    .answer:disabled { cursor:default; }
+    .feedback { min-height:58px; margin:16px 0; padding:13px 15px; border-radius:13px; background:#101b3c; color:var(--muted); line-height:1.5; }
+    .feedback.good { color:var(--green); } .feedback.bad { color:#ffb1bf; }
+    .game-actions { display:flex; gap:10px; justify-content:space-between; flex-wrap:wrap; margin-top:12px; }
+    .result { text-align:center; }
+    .result-medal { font-size:4.5rem; margin:8px 0; }
+    .score-big { font-size:clamp(2.7rem,9vw,4.5rem); font-weight:950; color:var(--yellow); line-height:1; margin:12px 0; }
+    .review { text-align:left; display:grid; gap:10px; margin:24px 0; }
+    .review-item { background:#111e43; padding:13px 15px; border-radius:12px; border-left:4px solid var(--green); }
+    .review-item.missed { border-left-color:var(--red); }
+    .review-item strong { display:block; margin-bottom:4px; }
+    footer { text-align:center; padding:26px 8px 12px; color:#8f9fc9; font-size:.82rem; line-height:1.6; }
+    .toast { color:var(--yellow); min-height:1.4em; font-size:.9rem; }
+    @media (max-width:580px) {
+      header { align-items:flex-start; } .top-chip { font-size:.72rem; }
+      .mission-grid { grid-template-columns:1fr; }
+      .mission { min-height:unset; }
+      .panel { border-radius:18px; }
+      .game-actions .btn { flex:1; }
+    }
+    @media (prefers-reduced-motion:reduce) { *,*::before,*::after { scroll-behavior:auto !important; transition:none !important; } }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="brand"><div class="brand-icon" aria-hidden="true">💾</div><span>EDU<span style="color:var(--cyan)">QUEST</span></span></div>
+      <div class="top-chip">🎮 GAME EDUKASI INFORMATIKA</div>
+    </header>
+
+    <main>
+      <section id="home" class="hero">
+        <div class="eyebrow">Misi dimulai sekarang</div>
+        <h1>MISI PENYELAMATAN <span>KOMPUTER</span></h1>
+        <p class="intro">Sistem komputer sedang dalam bahaya! Jadilah teknisi andal, selesaikan tantangan perangkat keras dan perangkat lunak, lalu pulihkan komputer utama.</p>
+        <div class="hero-art" aria-hidden="true">🖥️⚡🛠️</div>
+        <button class="btn primary" id="startBtn">MULAI MISI&nbsp; ➜</button>
+        <p style="color:var(--muted);font-size:.88rem;margin-top:20px;">📱 Bisa dimainkan di HP, tablet, laptop, dan papan interaktif digital (PID).</p>
+      </section>
+
+      <section id="missions" class="panel hidden" aria-labelledby="missionTitle">
+        <h2 id="missionTitle" class="section-title">Pilih Misi Penyelamatan</h2>
+        <p class="sub">Selesaikan kedua misi untuk membuka pemulihan komputer. Setiap jawaban benar menambah skor.</p>
+        <div class="stats">
+          <div class="stat"><small>Skor saat ini</small><strong id="menuScore">0</strong></div>
+          <div class="stat"><small>Misi selesai</small><strong id="missionProgress">0/2</strong></div>
+        </div>
+        <div class="mission-grid">
+          <button class="mission" id="hardwareMission">
+            <div class="emoji">🔧</div><h3>Misi 1: Perangkat Keras</h3>
+            <p>Kenali komponen fisik komputer dan fungsi setiap perangkat.</p>
+          </button>
+          <button class="mission" id="softwareMission">
+            <div class="emoji">💿</div><h3>Misi 2: Perangkat Lunak</h3>
+            <p>Temukan sistem operasi, aplikasi, dan perangkat lunak lainnya.</p>
+          </button>
+          <button class="mission" id="matchMission">
+            <div class="emoji">🧩</div><h3>Misi 3: Cocokkan Gambar</h3>
+            <p>Cocokkan gambar perangkat dengan fungsinya, lalu tentukan hardware atau software.</p>
+          </button>
+        </div>
+        <p id="missionToast" class="toast" role="status" aria-live="polite"></p>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:10px;">
+          <button class="btn secondary small" id="resetBtn">↻ Ulang dari Awal</button>
+        </div>
+      </section>
+
+      <section id="game" class="panel hidden" aria-labelledby="questionText">
+        <div class="stats">
+          <div class="stat"><small>Skor</small><strong id="score">0</strong></div>
+          <div class="stat"><small>Jawaban benar</small><strong id="correctCount">0</strong></div>
+          <div class="stat"><small>Nyawa misi</small><strong id="lives">❤️❤️❤️</strong></div>
+        </div>
+        <div class="question-count" id="missionLabel">MISI 1</div>
+        <div class="progress" aria-label="Kemajuan pertanyaan"><div id="progressBar"></div></div>
+        <p class="question" id="questionText">Pertanyaan akan muncul di sini.</p>
+        <div id="answers" class="answers"></div>
+        <div id="feedback" class="feedback" role="status" aria-live="polite">Pilih jawaban terbaik untuk melanjutkan.</div>
+        <div class="game-actions">
+          <button class="btn secondary" id="backBtn">← Menu Misi</button>
+          <button class="btn primary hidden" id="nextBtn">Pertanyaan Berikutnya ➜</button>
+        </div>
+      </section>
+
+      <section id="matching" class="panel hidden" aria-labelledby="matchingTitle">
+        <div class="stats">
+          <div class="stat"><small>Skor</small><strong id="matchScore">0</strong></div>
+          <div class="stat"><small>Pasangan benar</small><strong id="matchCorrect">0</strong></div>
+          <div class="stat"><small>Perangkat</small><strong id="matchProgress">1/8</strong></div>
+        </div>
+        <div class="question-count">MISI 3 · COLOKKAN GAMBAR DAN FUNGSI</div>
+        <div class="progress"><div id="matchProgressBar"></div></div>
+        <h2 id="matchingTitle" class="section-title">Kenali Perangkat!</h2>
+        <p class="sub">Amati gambar, pilih fungsi yang sesuai, lalu tentukan apakah termasuk perangkat keras atau perangkat lunak.</p>
+        <div class="match-layout">
+          <div class="device-card">
+            <div id="matchPicture" class="device-picture" aria-hidden="true">⌨️</div>
+            <strong id="matchName">Keyboard</strong>
+            <span style="color:var(--muted);font-size:.9rem;">Gambar perangkat</span>
+          </div>
+          <div>
+            <strong>1. Cocokkan dengan fungsi</strong>
+            <div id="functionOptions" class="match-options" style="margin-top:10px;"></div>
+            <strong style="display:block;margin-top:17px;">2. Pilih jenis perangkat</strong>
+            <div class="match-category">
+              <button class="match-option" id="categoryHardware">🔧 Perangkat Keras</button>
+              <button class="match-option" id="categorySoftware">💿 Perangkat Lunak</button>
+            </div>
+          </div>
+        </div>
+        <div id="matchFeedback" class="feedback" role="status" aria-live="polite">Pilih fungsi dan jenis perangkat.</div>
+        <div class="game-actions">
+          <button class="btn secondary" id="matchBackBtn">← Menu Misi</button>
+          <button class="btn primary" id="checkMatchBtn">Periksa Jawaban ✓</button>
+          <button class="btn primary hidden" id="nextMatchBtn">Perangkat Berikutnya ➜</button>
+        </div>
+      </section>
+
+      <section id="result" class="panel result hidden" aria-labelledby="resultTitle">
+        <div class="result-medal" id="resultEmoji" aria-hidden="true">🏆</div>
+        <h2 id="resultTitle" class="section-title">Misi Selesai!</h2>
+        <p class="sub" id="resultMessage">Komputer berhasil diselamatkan.</p>
+        <div class="score-big" id="finalScore">0</div>
+        <div style="color:var(--muted);">poin berhasil dikumpulkan</div>
+        <div class="review" id="review"></div>
+        <button class="btn primary" id="playAgainBtn">Main Lagi ↻</button>
+        <button class="btn secondary" id="resultMenuBtn" style="margin:8px;">Kembali ke Menu Misi</button>
+      </section>
+    </main>
+
+    <footer>
+      <strong>Misi Penyelamatan Komputer</strong> · Materi Sistem Komputer<br>
+      Fokus: Perangkat Keras (Hardware) dan Perangkat Lunak (Software)<br>
+      Dirancang untuk pembelajaran Informatika SMP.
+    </footer>
+  </div>
+
+  <script>
+    "use strict";
+
+    const questionBank = {
+      hardware: [
+        { q:"Komponen komputer yang bertugas memproses instruksi dan sering disebut sebagai “otak komputer” adalah ...", a:["Monitor","CPU / prosesor","Keyboard","Speaker"], correct:1, explain:"CPU atau prosesor menjalankan instruksi dan mengolah data." },
+        { q:"Perangkat yang digunakan untuk memasukkan teks dan angka ke komputer adalah ...", a:["Keyboard","Monitor","Printer","Proyektor"], correct:0, explain:"Keyboard merupakan perangkat input untuk memasukkan karakter." },
+        { q:"Komputer menyala, tetapi tidak ada gambar yang terlihat. Perangkat output yang perlu diperiksa adalah ...", a:["Mouse","Mikrofon","Monitor","Scanner"], correct:2, explain:"Monitor menampilkan informasi visual dari komputer." },
+        { q:"Sebuah sekolah ingin mencetak hasil pengolahan nilai ke kertas. Perangkat yang dibutuhkan adalah ...", a:["Webcam","Printer","RAM","Touchpad"], correct:1, explain:"Printer menghasilkan keluaran berupa cetakan di kertas." },
+        { q:"Mengapa RAM penting ketika beberapa aplikasi digunakan bersamaan?", a:["Menyimpan data sementara yang sedang digunakan","Mencetak dokumen","Menghubungkan komputer ke listrik saja","Menampilkan suara"], correct:0, explain:"RAM menyimpan data dan instruksi sementara agar dapat diakses cepat oleh sistem." },
+        { q:"Perangkat yang membantu menyimpan file meskipun komputer dimatikan adalah ...", a:["RAM","SSD atau hard disk","Mouse","Speaker"], correct:1, explain:"SSD dan hard disk merupakan media penyimpanan jangka panjang." }
+      ],
+      software: [
+        { q:"Manakah yang termasuk perangkat lunak sistem operasi?", a:["Microsoft Word","Windows","Paint","Kalkulator"], correct:1, explain:"Windows adalah sistem operasi yang mengelola perangkat keras dan sumber daya komputer." },
+        { q:"Siswa ingin membuat surat dengan teks, tabel, dan gambar. Jenis perangkat lunak yang paling sesuai adalah ...", a:["Aplikasi pengolah kata","Sistem operasi","Driver printer","Firmware keyboard"], correct:0, explain:"Aplikasi pengolah kata digunakan untuk membuat dan mengedit dokumen." },
+        { q:"Apa fungsi utama sistem operasi pada komputer?", a:["Mengelola perangkat keras dan menjalankan aplikasi","Menggantikan semua perangkat keras","Hanya membuat gambar","Hanya mencetak dokumen"], correct:0, explain:"Sistem operasi menjadi penghubung antara pengguna, aplikasi, dan perangkat keras." },
+        { q:"Program yang membantu sistem operasi berkomunikasi dengan perangkat seperti printer disebut ...", a:["Game","Driver","Presentasi","Spreadsheet"], correct:1, explain:"Driver memungkinkan sistem operasi mengenali dan menggunakan perangkat tertentu." },
+        { q:"Manakah contoh perangkat lunak untuk membuat presentasi pembelajaran?", a:["PowerPoint atau aplikasi presentasi sejenis","BIOS saja","RAM","Kabel HDMI"], correct:0, explain:"Aplikasi presentasi membantu menyusun materi dalam bentuk slide." },
+        { q:"Komputer memiliki keyboard dan monitor, tetapi tidak dapat menjalankan aplikasi karena sistem operasinya bermasalah. Kesimpulan terbaik adalah ...", a:["Perangkat keras selalu rusak","Perangkat lunak juga diperlukan agar komputer berfungsi","Monitor bisa menggantikan sistem operasi","Keyboard adalah aplikasi"], correct:1, explain:"Komputer bekerja melalui kerja sama perangkat keras dan perangkat lunak." }
+      ]
+    };
+
+    const matchingItems = [
+      { name:"Keyboard", image:"⌨️", type:"hardware", function:"Memasukkan teks dan angka ke komputer", explain:"Keyboard adalah perangkat keras input untuk mengetik." },
+      { name:"Monitor", image:"🖥️", type:"hardware", function:"Menampilkan teks, gambar, dan video", explain:"Monitor adalah perangkat keras output visual." },
+      { name:"Mouse", image:"🖱️", type:"hardware", function:"Menggerakkan penunjuk dan memilih objek di layar", explain:"Mouse adalah perangkat keras input untuk menunjuk dan memilih." },
+      { name:"Printer", image:"🖨️", type:"hardware", function:"Mencetak dokumen atau gambar ke kertas", explain:"Printer adalah perangkat keras output berupa cetakan." },
+      { name:"Windows", image:"🪟", type:"software", function:"Mengelola perangkat komputer dan menjalankan aplikasi", explain:"Windows adalah perangkat lunak sistem operasi." },
+      { name:"Aplikasi pengolah kata", image:"📄", type:"software", function:"Membuat dan mengedit dokumen teks", explain:"Aplikasi pengolah kata digunakan untuk membuat dokumen." },
+      { name:"Aplikasi presentasi", image:"📊", type:"software", function:"Membuat materi dalam bentuk slide", explain:"Aplikasi presentasi membantu menyusun dan menampilkan slide." },
+      { name:"Paint", image:"🎨", type:"software", function:"Menggambar dan mewarnai gambar digital", explain:"Paint adalah aplikasi untuk menggambar atau mengedit gambar sederhana." }
+    ];
+    const state = {
+      score: 0, correct: 0, lives: 3, completed: new Set(),
+      mode: null, questions: [], index: 0, answered: false, history: [],
+      matchItems: [], matchIndex: 0, matchCorrect: 0, selectedFunction: null, selectedCategory: null, matchAnswered: false
+    };
+
+    const $ = id => document.getElementById(id);
+    const screens = ["home","missions","game","matching","result"];
+    function showScreen(id) {
+      screens.forEach(screen => $(screen).classList.toggle("hidden", screen !== id));
+      window.scrollTo({ top:0, behavior:"smooth" });
+    }
+    function updateMenu() {
+      $("menuScore").textContent = state.score;
+      $("missionProgress").textContent = `${state.completed.size}/3`;
+      $("hardwareMission").disabled = state.completed.has("hardware");
+      $("softwareMission").disabled = state.completed.has("software");
+      $("matchMission").disabled = state.completed.has("matching");
+      if (state.completed.size === 3) {
+        $("missionToast").textContent = "🎉 Semua misi selesai! Komputer utama berhasil dipulihkan.";
+        $("missionToast").style.color = "var(--green)";
+      } else {
+        $("missionToast").textContent = state.completed.size ? "Bagus! Pilih misi berikutnya untuk melanjutkan." : "";
+        $("missionToast").style.color = "var(--yellow)";
+      }
+    }
+    function startMission(mode) {
+      if (state.completed.has(mode)) return;
+      state.mode = mode;
+      state.questions = questionBank[mode].map((q, i) => ({...q, originalIndex:i}));
+      // Acak urutan soal dan pilihan jawaban supaya permainan terasa berbeda.
+      state.questions.sort(() => Math.random() - 0.5);
+      state.index = 0;
+      state.answered = false;
+      state.history = [];
+      showScreen("game");
+      renderQuestion();
+    }
+    function renderQuestion() {
+      const q = state.questions[state.index];
+      state.answered = false;
+      $("score").textContent = state.score;
+      $("correctCount").textContent = state.correct;
+      $("lives").textContent = "❤️".repeat(state.lives) + "🖤".repeat(3-state.lives);
+      $("missionLabel").textContent = state.mode === "hardware" ? "MISI 1 · PERANGKAT KERAS" : "MISI 2 · PERANGKAT LUNAK";
+      $("progressBar").style.width = `${(state.index / state.questions.length) * 100}%`;
+      $("questionText").textContent = q.q;
+      $("feedback").textContent = "Pilih jawaban terbaik untuk melanjutkan.";
+      $("feedback").className = "feedback";
+      $("nextBtn").classList.add("hidden");
+      $("answers").innerHTML = "";
+      q.a.forEach((answer, i) => {
+        const btn = document.createElement("button");
+        btn.className = "answer";
+        const letter = document.createElement("span");
+        letter.className = "letter";
+        letter.textContent = String.fromCharCode(65+i);
+        const label = document.createElement("span");
+        label.textContent = answer;
+        btn.append(letter, label);
+        btn.addEventListener("click", () => chooseAnswer(i));
+        $("answers").appendChild(btn);
+      });
+    }
+    function chooseAnswer(choice) {
+      if (state.answered) return;
+      state.answered = true;
+      const q = state.questions[state.index];
+      const buttons = [...$("answers").querySelectorAll("button")];
+      buttons.forEach((btn, i) => {
+        btn.disabled = true;
+        if (i === q.correct) btn.classList.add("correct");
+        if (i === choice && i !== q.correct) btn.classList.add("wrong");
+      });
+      const isCorrect = choice === q.correct;
+      if (isCorrect) {
+        state.score += 10;
+        state.correct += 1;
+        $("feedback").textContent = "✅ Tepat! " + q.explain;
+        $("feedback").className = "feedback good";
+      } else {
+        state.lives = Math.max(0, state.lives - 1);
+        $("feedback").textContent = "💡 Belum tepat. " + q.explain;
+        $("feedback").className = "feedback bad";
+      }
+      state.history.push({ question:q.q, chosen:q.a[choice], answer:q.a[q.correct], correct:isCorrect, explain:q.explain });
+      $("score").textContent = state.score;
+      $("correctCount").textContent = state.correct;
+      $("lives").textContent = "❤️".repeat(state.lives) + "🖤".repeat(3-state.lives);
+      $("progressBar").style.width = `${((state.index + 1) / state.questions.length) * 100}%`;
+      $("nextBtn").textContent = state.index === state.questions.length - 1 ? "Selesaikan Misi ✓" : "Pertanyaan Berikutnya ➜";
+      $("nextBtn").classList.remove("hidden");
+    }
+    function nextQuestion() {
+      if (!state.answered) return;
+      if (state.index < state.questions.length - 1) {
+        state.index++;
+        renderQuestion();
+      } else {
+        state.completed.add(state.mode);
+        updateMenu();
+        showResult();
+      }
+    }
+    function showResult() {
+      const total = state.questions.length;
+      const got = state.history.filter(item => item.correct).length;
+      $("resultEmoji").textContent = got === total ? "🏆" : got >= total/2 ? "🌟" : "🧰";
+      $("resultTitle").textContent = state.mode === "hardware" ? "Misi Perangkat Keras Selesai!" : "Misi Perangkat Lunak Selesai!";
+      $("resultMessage").textContent = got === total
+        ? "Luar biasa! Kamu menjawab semua pertanyaan dengan benar."
+        : got >= total/2
+          ? "Kerja bagus! Baca pembahasan untuk memperkuat pemahamanmu."
+          : "Terus berlatih! Pelajari pembahasan lalu coba misi lainnya.";
+      $("finalScore").textContent = state.history.filter(item => item.correct).length * 10;
+      $("review").innerHTML = "";
+      state.history.forEach((item, i) => {
+        const card = document.createElement("div");
+        card.className = "review-item" + (item.correct ? "" : " missed");
+        const title = document.createElement("strong");
+        title.textContent = `${i+1}. ${item.question}`;
+        const answer = document.createElement("div");
+        answer.textContent = `${item.correct ? "Benar" : "Jawaban benar"}: ${item.answer}`;
+        const explanation = document.createElement("div");
+        explanation.style.cssText = "color:var(--muted);margin-top:5px;font-size:.92rem;line-height:1.5";
+        explanation.textContent = item.explain;
+        card.append(title, answer, explanation);
+        $("review").appendChild(card);
+      });
+      showScreen("result");
+    }
+    function resetGame() {
+      state.score = 0; state.correct = 0; state.lives = 3;
+      state.completed = new Set(); state.mode = null; state.questions = [];
+      state.index = 0; state.answered = false; state.history = [];
+      state.matchItems = []; state.matchIndex = 0; state.matchCorrect = 0; state.selectedFunction = null; state.selectedCategory = null; state.matchAnswered = false;
+      $("categoryHardware").disabled = false; $("categorySoftware").disabled = false;
+      updateMenu();
+      showScreen("home");
+    }
+
+    function startMatching() {
+      if (state.completed.has("matching")) return;
+      state.matchItems = matchingItems.map(item => ({...item})).sort(() => Math.random() - 0.5);
+      state.matchIndex = 0; state.matchCorrect = 0; state.matchAnswered = false;
+      showScreen("matching");
+      renderMatchItem();
+    }
+    function renderMatchItem() {
+      const item = state.matchItems[state.matchIndex];
+      state.selectedFunction = null; state.selectedCategory = null; state.matchAnswered = false;
+      $("matchPicture").textContent = item.image;
+      $("matchName").textContent = item.name;
+      $("matchScore").textContent = state.score;
+      $("matchCorrect").textContent = state.matchCorrect;
+      $("matchProgress").textContent = `${state.matchIndex+1}/${state.matchItems.length}`;
+      $("matchProgressBar").style.width = `${(state.matchIndex/state.matchItems.length)*100}%`;
+      $("matchFeedback").textContent = "Pilih fungsi dan jenis perangkat.";
+      $("matchFeedback").className = "feedback";
+      $("checkMatchBtn").classList.remove("hidden");
+      $("nextMatchBtn").classList.add("hidden");
+      $("categoryHardware").classList.remove("selected","correct","wrong");
+      $("categorySoftware").classList.remove("selected","correct","wrong");
+      const otherFunctions = matchingItems.filter(x => x.function !== item.function).map(x => x.function).sort(() => Math.random() - .5).slice(0,2);
+      const options = [item.function, ...otherFunctions].sort(() => Math.random() - .5);
+      $("functionOptions").innerHTML = "";
+      options.forEach((label, i) => {
+        const btn = document.createElement("button");
+        btn.className = "match-option";
+        btn.textContent = `${String.fromCharCode(65+i)}. ${label}`;
+        btn.addEventListener("click", () => {
+          if (state.matchAnswered) return;
+          state.selectedFunction = label;
+          [...$("functionOptions").children].forEach(b => b.classList.remove("selected"));
+          btn.classList.add("selected");
+        });
+        $("functionOptions").appendChild(btn);
+      });
+    }
+    function selectCategory(category) {
+      if (state.matchAnswered) return;
+      state.selectedCategory = category;
+      $("categoryHardware").classList.toggle("selected", category === "hardware");
+      $("categorySoftware").classList.toggle("selected", category === "software");
+    }
+    function checkMatch() {
+      if (state.matchAnswered) return;
+      if (!state.selectedFunction || !state.selectedCategory) {
+        $("matchFeedback").textContent = "Pilih satu fungsi dan satu jenis perangkat terlebih dahulu.";
+        $("matchFeedback").className = "feedback bad";
+        return;
+      }
+      state.matchAnswered = true;
+      const item = state.matchItems[state.matchIndex];
+      const functionCorrect = state.selectedFunction === item.function;
+      const typeCorrect = state.selectedCategory === item.type;
+      const bothCorrect = functionCorrect && typeCorrect;
+      if (bothCorrect) {
+        state.score += 10; state.matchCorrect += 1;
+        $("matchFeedback").textContent = `✅ Benar! ${item.explain}`;
+        $("matchFeedback").className = "feedback good";
+      } else {
+        $("matchFeedback").textContent = `💡 Belum tepat. Fungsi: ${item.function}. Jenis: ${item.type === "hardware" ? "Perangkat Keras" : "Perangkat Lunak"}. ${item.explain}`;
+        $("matchFeedback").className = "feedback bad";
+      }
+      [...$("functionOptions").children].forEach(btn => {
+        btn.disabled = true;
+        if (btn.textContent.slice(3) === item.function) btn.classList.add("correct");
+        else if (btn.classList.contains("selected")) btn.classList.add("wrong");
+      });
+      const rightCategory = item.type === "hardware" ? $("categoryHardware") : $("categorySoftware");
+      const wrongCategory = item.type === "hardware" ? $("categorySoftware") : $("categoryHardware");
+      rightCategory.classList.add("correct");
+      if (state.selectedCategory !== item.type) wrongCategory.classList.add("wrong");
+      $("categoryHardware").disabled = true; $("categorySoftware").disabled = true;
+      $("matchScore").textContent = state.score;
+      $("matchCorrect").textContent = state.matchCorrect;
+      $("matchProgressBar").style.width = `${((state.matchIndex+1)/state.matchItems.length)*100}%`;
+      $("checkMatchBtn").classList.add("hidden");
+      $("nextMatchBtn").textContent = state.matchIndex === state.matchItems.length-1 ? "Selesaikan Misi ✓" : "Gambar Berikutnya ➜";
+      $("nextMatchBtn").classList.remove("hidden");
+    }
+    function nextMatch() {
+      if (!state.matchAnswered) return;
+      if (state.matchIndex < state.matchItems.length - 1) {
+        state.matchIndex++;
+        $("categoryHardware").disabled = false; $("categorySoftware").disabled = false;
+        renderMatchItem();
+      } else {
+        state.completed.add("matching");
+        updateMenu();
+        $("resultEmoji").textContent = state.matchCorrect === state.matchItems.length ? "🏆" : state.matchCorrect >= state.matchItems.length/2 ? "🌟" : "🧩";
+        $("resultTitle").textContent = "Misi Cocokkan Gambar Selesai!";
+        $("resultMessage").textContent = `Kamu mencocokkan ${state.matchCorrect} dari ${state.matchItems.length} perangkat dengan benar.`;
+        $("finalScore").textContent = state.matchCorrect * 10;
+        $("review").innerHTML = "";
+        state.matchItems.forEach((item, i) => {
+          const card = document.createElement("div");
+          card.className = "review-item";
+          const title = document.createElement("strong"); title.textContent = `${item.image} ${item.name}`;
+          const answer = document.createElement("div"); answer.textContent = `Jenis: ${item.type === "hardware" ? "Perangkat Keras" : "Perangkat Lunak"}`;
+          const explanation = document.createElement("div"); explanation.style.cssText = "color:var(--muted);margin-top:5px;font-size:.92rem;line-height:1.5"; explanation.textContent = `Fungsi: ${item.function}. ${item.explain}`;
+          card.append(title, answer, explanation); $("review").appendChild(card);
+        });
+        showScreen("result");
+      }
+    }
+
+    $("startBtn").addEventListener("click", () => { updateMenu(); showScreen("missions"); });
+    $("hardwareMission").addEventListener("click", () => startMission("hardware"));
+    $("softwareMission").addEventListener("click", () => startMission("software"));
+    $("matchMission").addEventListener("click", startMatching);
+    $("categoryHardware").addEventListener("click", () => selectCategory("hardware"));
+    $("categorySoftware").addEventListener("click", () => selectCategory("software"));
+    $("checkMatchBtn").addEventListener("click", checkMatch);
+    $("nextMatchBtn").addEventListener("click", nextMatch);
+    $("matchBackBtn").addEventListener("click", () => { $("categoryHardware").disabled = false; $("categorySoftware").disabled = false; updateMenu(); showScreen("missions"); });
+    $("nextBtn").addEventListener("click", nextQuestion);
+    $("backBtn").addEventListener("click", () => { updateMenu(); showScreen("missions"); });
+    $("resetBtn").addEventListener("click", resetGame);
+    $("playAgainBtn").addEventListener("click", resetGame);
+    $("resultMenuBtn").addEventListener("click", () => { updateMenu(); showScreen("missions"); });
+  </script>
+</body>
+</html>
+("resultMessage").textContent = got === total
+        ? "Luar biasa! Kamu menjawab semua pertanyaan dengan benar."
+        : got >= total/2
+          ? "Kerja bagus! Baca pembahasan untuk memperkuat pemahamanmu."
+          : "Terus berlatih! Pelajari pembahasan lalu coba misi lainnya.";
+      $("finalScore").textContent = state.history.filter(item => item.correct).length * 10;
+      $("review").innerHTML = "";
+      state.history.forEach((item, i) => {
+        const card = document.createElement("div");
+        card.className = "review-item" + (item.correct ? "" : " missed");
+        const title = document.createElement("strong");
+        title.textContent = `${i+1}. ${item.question}`;
+        const answer = document.createElement("div");
+        answer.textContent = `${item.correct ? "Benar" : "Jawaban benar"}: ${item.answer}`;
+        const explanation = document.createElement("div");
+        explanation.style.cssText = "color:var(--muted);margin-top:5px;font-size:.92rem;line-height:1.5";
+        explanation.textContent = item.explain;
+        card.append(title, answer, explanation);
+        $("review").appendChild(card);
+      });
+      showScreen("result");
+    }
+    const matchingItems = [
+      { emoji:"⌨️", name:"Keyboard", func:"Digunakan untuk memasukkan teks, angka, dan perintah.", type:"hardware", explain:"Keyboard adalah perangkat keras karena merupakan benda fisik yang dapat disentuh." },
+      { emoji:"🖱️", name:"Mouse", func:"Menggerakkan penunjuk dan memilih objek di layar.", type:"hardware", explain:"Mouse adalah perangkat keras yang membantu pengguna memberi masukan." },
+      { emoji:"🖥️", name:"Monitor", func:"Menampilkan teks, gambar, dan video dari komputer.", type:"hardware", explain:"Monitor adalah perangkat keras keluaran (output)." },
+      { emoji:"🖨️", name:"Printer", func:"Mencetak dokumen atau gambar ke atas kertas.", type:"hardware", explain:"Printer adalah perangkat keras keluaran." },
+      { emoji:"🪟", name:"Windows", func:"Mengelola perangkat komputer dan menjadi tempat aplikasi berjalan.", type:"software", explain:"Windows adalah perangkat lunak berupa sistem operasi." },
+      { emoji:"📝", name:"Aplikasi pengolah kata", func:"Membuat, mengedit, dan menyimpan dokumen teks.", type:"software", explain:"Aplikasi pengolah kata adalah perangkat lunak aplikasi." },
+      { emoji:"🎨", name:"Aplikasi menggambar", func:"Membuat atau mengedit gambar digital.", type:"software", explain:"Aplikasi menggambar adalah perangkat lunak aplikasi." },
+      { emoji:"🛡️", name:"Antivirus", func:"Membantu mendeteksi dan menangani perangkat lunak berbahaya.", type:"software", explain:"Antivirus adalah perangkat lunak keamanan." }
+    ];
+    function startMatching() {
+      if (state.completed.has("matching")) return;
+      state.matchItems = matchingItems.slice().sort(() => Math.random() - 0.5);
+      state.matchIndex = 0;
+      state.matchAnswered = false;
+      state.matchCorrect = 0;
+      showScreen("matching");
+      renderMatchItem();
+    }
+    function renderMatchItem() {
+      const item = state.matchItems[state.matchIndex];
+      state.matchAnswered = false;
+      $("matchEmoji").textContent = item.emoji;
+      $("matchName").textContent = item.name;
+      $("matchFunction").textContent = item.func;
+      $("matchScore").textContent = state.score;
+      $("matchCount").textContent = `${state.matchIndex}/8`;
+      $("matchProgressBar").style.width = `${(state.matchIndex / state.matchItems.length) * 100}%`;
+      $("matchFeedback").textContent = "Pilih kategori yang sesuai.";
+      $("matchFeedback").className = "feedback";
+      $("chooseHardware").disabled = false;
+      $("chooseSoftware").disabled = false;
+      $("chooseHardware").className = "btn secondary";
+      $("chooseSoftware").className = "btn secondary";
+      $("nextMatchBtn").classList.add("hidden");
+    }
+    function chooseMatchType(type) {
+      if (state.matchAnswered) return;
+      state.matchAnswered = true;
+      const item = state.matchItems[state.matchIndex];
+      const correct = type === item.type;
+      $("chooseHardware").disabled = true;
+      $("chooseSoftware").disabled = true;
+      if (type === "hardware") $("chooseHardware").className = "btn " + (item.type === type ? "primary" : "secondary");
+      if (type === "software") $("chooseSoftware").className = "btn " + (item.type === type ? "primary" : "secondary");
+      if (correct) {
+        state.score += 10;
+        state.matchCorrect++;
+        $("matchFeedback").textContent = "✅ Benar! " + item.explain;
+        $("matchFeedback").className = "feedback good";
+      } else {
+        $("matchFeedback").textContent = "💡 Belum tepat. " + item.explain;
+        $("matchFeedback").className = "feedback bad";
+      }
+      $("matchScore").textContent = state.score;
+      $("matchCount").textContent = `${state.matchIndex + 1}/8`;
+      $("matchProgressBar").style.width = `${((state.matchIndex + 1) / state.matchItems.length) * 100}%`;
+      $("nextMatchBtn").textContent = state.matchIndex === state.matchItems.length - 1 ? "Selesaikan Misi ✓" : "Perangkat Berikutnya ➜";
+      $("nextMatchBtn").classList.remove("hidden");
+    }
+    function nextMatchItem() {
+      if (!state.matchAnswered) return;
+      if (state.matchIndex < state.matchItems.length - 1) {
+        state.matchIndex++;
+        renderMatchItem();
+      } else {
+        state.completed.add("matching");
+        updateMenu();
+        $("resultEmoji").textContent = state.matchCorrect === 8 ? "🏆" : state.matchCorrect >= 4 ? "🌟" : "🧩";
+        $("resultTitle").textContent = "Misi Cocokkan Perangkat Selesai!";
+        $("resultMessage").textContent = `Kamu berhasil mengklasifikasikan ${state.matchCorrect} dari 8 perangkat dengan benar.`;
+        $("finalScore").textContent = state.matchCorrect * 10;
+        $("review").innerHTML = "";
+        state.matchItems.forEach((item, i) => {
+          const card = document.createElement("div");
+          card.className = "review-item";
+          const title = document.createElement("strong");
+          title.textContent = `${item.emoji} ${item.name} — ${item.type === "hardware" ? "Perangkat Keras" : "Perangkat Lunak"}`;
+          const desc = document.createElement("div");
+          desc.textContent = item.func;
+          const explain = document.createElement("div");
+          explain.style.cssText = "color:var(--muted);margin-top:5px;font-size:.92rem;line-height:1.5";
+          explain.textContent = item.explain;
+          card.append(title, desc, explain);
+          $("review").appendChild(card);
+        });
+        showScreen("result");
+      }
+    }
+
+    function resetGame() {
+      state.score = 0; state.correct = 0; state.lives = 3;
+      state.completed = new Set(); state.mode = null; state.questions = [];
+      state.index = 0; state.answered = false; state.history = [];
+      state.matchIndex = 0; state.matchAnswered = false; state.matchItems = []; state.matchCorrect = 0;
+      updateMenu();
+      showScreen("home");
+    }
+
+    function startMatching() {
+      if (state.completed.has("matching")) return;
+      state.matchItems = matchingItems.map(item => ({...item})).sort(() => Math.random() - 0.5);
+      state.matchIndex = 0; state.matchCorrect = 0; state.matchAnswered = false;
+      showScreen("matching");
+      renderMatchItem();
+    }
+    function renderMatchItem() {
+      const item = state.matchItems[state.matchIndex];
+      state.selectedFunction = null; state.selectedCategory = null; state.matchAnswered = false;
+      $("matchPicture").textContent = item.image;
+      $("matchName").textContent = item.name;
+      $("matchScore").textContent = state.score;
+      $("matchCorrect").textContent = state.matchCorrect;
+      $("matchProgress").textContent = `${state.matchIndex+1}/${state.matchItems.length}`;
+      $("matchProgressBar").style.width = `${(state.matchIndex/state.matchItems.length)*100}%`;
+      $("matchFeedback").textContent = "Pilih fungsi dan jenis perangkat.";
+      $("matchFeedback").className = "feedback";
+      $("checkMatchBtn").classList.remove("hidden");
+      $("nextMatchBtn").classList.add("hidden");
+      $("categoryHardware").classList.remove("selected","correct","wrong");
+      $("categorySoftware").classList.remove("selected","correct","wrong");
+      const otherFunctions = matchingItems.filter(x => x.function !== item.function).map(x => x.function).sort(() => Math.random() - .5).slice(0,2);
+      const options = [item.function, ...otherFunctions].sort(() => Math.random() - .5);
+      $("functionOptions").innerHTML = "";
+      options.forEach((label, i) => {
+        const btn = document.createElement("button");
+        btn.className = "match-option";
+        btn.textContent = `${String.fromCharCode(65+i)}. ${label}`;
+        btn.addEventListener("click", () => {
+          if (state.matchAnswered) return;
+          state.selectedFunction = label;
+          [...$("functionOptions").children].forEach(b => b.classList.remove("selected"));
+          btn.classList.add("selected");
+        });
+        $("functionOptions").appendChild(btn);
+      });
+    }
+    function selectCategory(category) {
+      if (state.matchAnswered) return;
+      state.selectedCategory = category;
+      $("categoryHardware").classList.toggle("selected", category === "hardware");
+      $("categorySoftware").classList.toggle("selected", category === "software");
+    }
+    function checkMatch() {
+      if (state.matchAnswered) return;
+      if (!state.selectedFunction || !state.selectedCategory) {
+        $("matchFeedback").textContent = "Pilih satu fungsi dan satu jenis perangkat terlebih dahulu.";
+        $("matchFeedback").className = "feedback bad";
+        return;
+      }
+      state.matchAnswered = true;
+      const item = state.matchItems[state.matchIndex];
+      const functionCorrect = state.selectedFunction === item.function;
+      const typeCorrect = state.selectedCategory === item.type;
+      const bothCorrect = functionCorrect && typeCorrect;
+      if (bothCorrect) {
+        state.score += 10; state.matchCorrect += 1;
+        $("matchFeedback").textContent = `✅ Benar! ${item.explain}`;
+        $("matchFeedback").className = "feedback good";
+      } else {
+        $("matchFeedback").textContent = `💡 Belum tepat. Fungsi: ${item.function}. Jenis: ${item.type === "hardware" ? "Perangkat Keras" : "Perangkat Lunak"}. ${item.explain}`;
+        $("matchFeedback").className = "feedback bad";
+      }
+      [...$("functionOptions").children].forEach(btn => {
+        btn.disabled = true;
+        if (btn.textContent.slice(3) === item.function) btn.classList.add("correct");
+        else if (btn.classList.contains("selected")) btn.classList.add("wrong");
+      });
+      const rightCategory = item.type === "hardware" ? $("categoryHardware") : $("categorySoftware");
+      const wrongCategory = item.type === "hardware" ? $("categorySoftware") : $("categoryHardware");
+      rightCategory.classList.add("correct");
+      if (state.selectedCategory !== item.type) wrongCategory.classList.add("wrong");
+      $("categoryHardware").disabled = true; $("categorySoftware").disabled = true;
+      $("matchScore").textContent = state.score;
+      $("matchCorrect").textContent = state.matchCorrect;
+      $("matchProgressBar").style.width = `${((state.matchIndex+1)/state.matchItems.length)*100}%`;
+      $("checkMatchBtn").classList.add("hidden");
+      $("nextMatchBtn").textContent = state.matchIndex === state.matchItems.length-1 ? "Selesaikan Misi ✓" : "Gambar Berikutnya ➜";
+      $("nextMatchBtn").classList.remove("hidden");
+    }
+    function nextMatch() {
+      if (!state.matchAnswered) return;
+      if (state.matchIndex < state.matchItems.length - 1) {
+        state.matchIndex++;
+        $("categoryHardware").disabled = false; $("categorySoftware").disabled = false;
+        renderMatchItem();
+      } else {
+        state.completed.add("matching");
+        updateMenu();
+        $("resultEmoji").textContent = state.matchCorrect === state.matchItems.length ? "🏆" : state.matchCorrect >= state.matchItems.length/2 ? "🌟" : "🧩";
+        $("resultTitle").textContent = "Misi Cocokkan Gambar Selesai!";
+        $("resultMessage").textContent = `Kamu mencocokkan ${state.matchCorrect} dari ${state.matchItems.length} perangkat dengan benar.`;
+        $("finalScore").textContent = state.matchCorrect * 10;
+        $("review").innerHTML = "";
+        state.matchItems.forEach((item, i) => {
+          const card = document.createElement("div");
+          card.className = "review-item";
+          const title = document.createElement("strong"); title.textContent = `${item.image} ${item.name}`;
+          const answer = document.createElement("div"); answer.textContent = `Jenis: ${item.type === "hardware" ? "Perangkat Keras" : "Perangkat Lunak"}`;
+          const explanation = document.createElement("div"); explanation.style.cssText = "color:var(--muted);margin-top:5px;font-size:.92rem;line-height:1.5"; explanation.textContent = `Fungsi: ${item.function}. ${item.explain}`;
+          card.append(title, answer, explanation); $("review").appendChild(card);
+        });
+        showScreen("result");
+      }
+    }
+
+    $("startBtn").addEventListener("click", () => { updateMenu(); showScreen("missions"); });
+    $("hardwareMission").addEventListener("click", () => startMission("hardware"));
+    $("softwareMission").addEventListener("click", () => startMission("software"));
+    $("matchingMission").addEventListener("click", startMatching);
+    $("chooseHardware").addEventListener("click", () => chooseMatchType("hardware"));
+    $("chooseSoftware").addEventListener("click", () => chooseMatchType("software"));
+    $("nextMatchBtn").addEventListener("click", nextMatchItem);
+    $("matchBackBtn").addEventListener("click", () => { updateMenu(); showScreen("missions"); });
+    $("nextBtn").addEventListener("click", nextQuestion);
+    $("backBtn").addEventListener("click", () => { updateMenu(); showScreen("missions"); });
+    $("resetBtn").addEventListener("click", resetGame);
+    $("playAgainBtn").addEventListener("click", resetGame);
+    $("resultMenuBtn").addEventListener("click", () => { updateMenu(); showScreen("missions"); });
+  </script>
+</body>
+</html>
